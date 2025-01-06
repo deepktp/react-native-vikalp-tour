@@ -5,7 +5,6 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.mjs",
-  "private": false,
   "scripts": {
     "build": "tsup",
     "dev": "NODE_ENV=development yarn build --watch",
