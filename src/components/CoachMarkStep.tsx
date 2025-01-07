@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { type NativeMethods } from "react-native";
 
-import { useCopilot } from "../contexts/CopilotProvider";
+import { useCopilot } from "../contexts/CoachMarkProvider";
 
 interface Props {
   name: string;

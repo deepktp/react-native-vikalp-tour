@@ -4,8 +4,8 @@ import React from "react";
 import {
   CopilotProvider,
   type useCopilot,
-} from "../../contexts/CopilotProvider";
-import { CopilotStep } from "../CopilotStep";
+} from "../../contexts/CoachMarkProvider";
+import { CopilotStep } from "../CoachMarkStep";
 
 jest.mock("../../contexts/CopilotProvider", () => ({
   ...jest.requireActual("../../contexts/CopilotProvider"),

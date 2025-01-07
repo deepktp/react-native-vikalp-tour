@@ -12,7 +12,7 @@ export default defineConfig({
   async onSuccess() {
     if (process.env.NODE_ENV === "development") {
       const exampleOutputPath = path.resolve(
-        "./example/node_modules/react-native-copilot"
+        "./example/node_modules/react-native-coach-mark"
       );
       const exampleOutputNodeModulesPath = path.resolve(
         exampleOutputPath,

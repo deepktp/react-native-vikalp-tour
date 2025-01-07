@@ -1,6 +1,6 @@
 import React, { type FunctionComponent } from "react";
 import { Text, View } from "react-native";
-import { useCopilot } from "../../contexts/CopilotProvider";
+import { useCopilot } from "../../contexts/CoachMarkProvider";
 
 import { styles } from "../style";
 

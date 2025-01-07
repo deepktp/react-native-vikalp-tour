@@ -10,13 +10,13 @@ import React, {
 } from "react";
 import { findNodeHandle, type ScrollView } from "react-native";
 import {
-  CopilotModal,
-  type CopilotModalHandle,
-} from "../components/CopilotModal";
+  CoachMarkModal,
+  type CoachMarkModalHandle
+} from "../components/CoachMarkModal";
 import { OFFSET_WIDTH } from "../components/style";
 import { useStateWithAwait } from "../hooks/useStateWithAwait";
 import { useStepsMap } from "../hooks/useStepsMap";
-import { type CopilotOptions, type Step } from "../types";
+import { type CoachMarkOptions, type Step } from "../types";
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type Events = {
@@ -25,7 +25,7 @@ type Events = {
   stepChange: Step | undefined;
 };
 
-interface CopilotContextType {
+interface CoachMarkContextType {
   registerStep: (step: Step) => void;
   unregisterStep: (stepName: string) => void;
   currentStep: Step | undefined;
@@ -38,7 +38,7 @@ interface CopilotContextType {
   goToNth: (n: number) => Promise<void>;
   goToPrev: () => Promise<void>;
   visible: boolean;
-  copilotEvents: Emitter<Events>;
+  coachMarkEvents: Emitter<Events>;
   isFirstStep: boolean;
   isLastStep: boolean;
   currentStepNumber: number;
@@ -51,16 +51,16 @@ At 60fps means 2 seconds
 */
 const MAX_START_TRIES = 120;
 
-const CopilotContext = createContext<CopilotContextType | undefined>(undefined);
+const CoachMarkContext = createContext<CoachMarkContextType | undefined>(undefined);
 
-export const CopilotProvider = ({
+export const CoachMarkProvider = ({
   verticalOffset = 0,
   children,
   ...rest
-}: PropsWithChildren<CopilotOptions>) => {
+}: PropsWithChildren<CoachMarkOptions>) => {
   const startTries = useRef(0);
-  const copilotEvents = useRef(mitt<Events>()).current;
-  const modal = useRef<CopilotModalHandle | null>(null);
+  const coachMarkEvents = useRef(mitt<Events>()).current;
+  const modal = useRef<CoachMarkModalHandle | null>(null);
 
   const [visible, setVisibility] = useStateWithAwait(false);
   const [scrollView, setScrollView] = useState<ScrollView | null>(null);
@@ -102,7 +102,7 @@ export const CopilotProvider = ({
   const setCurrentStep = useCallback(
     async (step?: Step, move: boolean = true) => {
       setCurrentStepState(step);
-      copilotEvents.emit("stepChange", step);
+      coachMarkEvents.emit("stepChange", step);
 
       if (scrollView != null) {
         const nodeHandle = findNodeHandle(scrollView);
@@ -126,7 +126,7 @@ export const CopilotProvider = ({
         scrollView != null ? 100 : 0
       );
     },
-    [copilotEvents, moveModalToStep, scrollView, setCurrentStepState]
+    [coachMarkEvents, moveModalToStep, scrollView, setCurrentStepState]
   );
 
   const start = useCallback(
@@ -148,7 +148,7 @@ export const CopilotProvider = ({
           void start(fromStep);
         });
       } else {
-        copilotEvents.emit("start");
+        coachMarkEvents.emit("start");
         await setCurrentStep(currentStep);
         await moveModalToStep(currentStep);
         await setVisibility(true);
@@ -156,7 +156,7 @@ export const CopilotProvider = ({
       }
     },
     [
-      copilotEvents,
+      coachMarkEvents,
       getFirstStep,
       moveModalToStep,
       scrollView,
@@ -168,8 +168,8 @@ export const CopilotProvider = ({
 
   const stop = useCallback(async () => {
     await setVisibility(false);
-    copilotEvents.emit("stop");
-  }, [copilotEvents, setVisibility]);
+    coachMarkEvents.emit("stop");
+  }, [coachMarkEvents, setVisibility]);
 
   const next = useCallback(async () => {
     await setCurrentStep(getNextStep());
@@ -194,7 +194,7 @@ export const CopilotProvider = ({
       start,
       stop,
       visible,
-      copilotEvents,
+      coachMarkEvents,
       goToNext: next,
       goToNth: nth,
       goToPrev: prev,
@@ -210,7 +210,7 @@ export const CopilotProvider = ({
       start,
       stop,
       visible,
-      copilotEvents,
+      coachMarkEvents,
       next,
       nth,
       prev,
@@ -222,22 +222,22 @@ export const CopilotProvider = ({
   );
 
   return (
-    <CopilotContext.Provider value={value}>
+    <CoachMarkContext.Provider value={value}>
       <>
-        <CopilotModal
+        <CoachMarkModal
           ref={modal}
           {...rest}
         />
         {children}
       </>
-    </CopilotContext.Provider>
+    </CoachMarkContext.Provider>
   );
 };
 
-export const useCopilot = () => {
-  const value = useContext(CopilotContext);
+export const useCoachMark = () => {
+  const value = useContext(CoachMarkContext);
   if (value == null) {
-    throw new Error("You must wrap your app inside CopilotProvider");
+    throw new Error("You must wrap your app inside CoachMarkProvider");
   }
 
   return value;
