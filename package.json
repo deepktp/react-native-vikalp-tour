@@ -1,5 +1,5 @@
 {
-  "name": "react-native-copilot",
+  "name": "react-native-coach-mark",
   "version": "3.3.3",
   "description": "Make an interactive step by step tour guide for you react-native app",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mohebifar/react-native-copilot.git"
+    "url": "git+https://github.com/mohebifar/react-native-coach-mark.git"
   },
   "keywords": [
     "react-native",
@@ -28,12 +28,12 @@
   "files": [
     "dist"
   ],
-  "author": "Mohamad Mohebifar <mohamad@mohebifar.com>",
+  "author": "Deepak Yadav <deep@booksmotion.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mohebifar/react-native-copilot/issues"
+    "url": "https://github.com/mohebifar/react-native-coach-mark/issues"
   },
-  "homepage": "https://github.com/mohebifar/react-native-copilot#readme",
+  "homepage": "https://github.com/mohebifar/react-native-coach-mark#readme",
   "devDependencies": {
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.4.3",

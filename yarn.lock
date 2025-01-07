@@ -8738,9 +8738,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-copilot@workspace:.":
+"react-native-coach-mark@workspace:.":
   version: 0.0.0-use.local
-  resolution: "react-native-copilot@workspace:."
+  resolution: "react-native-coach-mark@workspace:."
   dependencies:
     "@changesets/changelog-github": "npm:^0.5.0"
     "@changesets/cli": "npm:^2.27.1"
