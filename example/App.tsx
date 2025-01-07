@@ -1,6 +1,6 @@
 import React from "react";
 import CopilotHandler from "./CopilotHandler";
-import { CoachMarkProvider } from "react-native-copilot";
+import { CoachMarkProvider } from "react-native-coach-mark";
 
 const App = () => {
   return ( 

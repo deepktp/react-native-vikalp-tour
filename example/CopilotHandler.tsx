@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Pressable, Text, View } from "react-native";
-import { CoachMarkStep, useCoachMark, walkthroughable } from "react-native-copilot";
+import { CoachMarkStep, useCoachMark, walkthroughable } from "react-native-coach-mark";
 
 const CopilotText= walkthroughable(Text);
 const CopilotHandler = () => {
