@@ -6,11 +6,11 @@ import { Button } from "./Button";
 import { styles } from "../style";
 
 import type { TooltipProps } from "../../types";
-import { useCopilot } from "../../contexts/CoachMarkProvider";
+import { useCoachMark } from "../../contexts/CoachMarkProvider";
 
 export const Tooltip = ({ labels }: TooltipProps) => {
   const { goToNext, goToPrev, stop, currentStep, isFirstStep, isLastStep } =
-    useCopilot();
+    useCoachMark();
 
   const handleStop = () => {
     void stop();

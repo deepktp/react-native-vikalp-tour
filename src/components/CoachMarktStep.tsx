@@ -17,7 +17,7 @@ interface Props {
  * @props name: string - Unique id for step
  * @props order: number - Order of step
  * @props text: React.ReactElement<any> | string - String or React element to display in tooltip
- * @props children: React.ReactElement<any> - Child element to wrap with copilot
+ * @props children: React.ReactElement<any> - Child element to wrap with coachMark
  * @props active?: boolean - If step is active
  * @props verison?: string | number - Change this prop to force update the component
  * @returns 
@@ -89,7 +89,7 @@ export const CoachMarkStep = ({
     }
   }, [name, unregisterStep, active]);
 
-  const copilotProps = useMemo(
+  const coachMarkProps = useMemo(
     () => ({
       ref: wrapperRef,
       onLayout: () => {}, // Android hack
@@ -97,5 +97,5 @@ export const CoachMarkStep = ({
     []
   );
 
-  return React.cloneElement(children, { copilot: copilotProps });
+  return React.cloneElement(children, { coachMark: coachMarkProps });
 };

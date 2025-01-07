@@ -1,6 +1,6 @@
 {
-  "name": "react-native-coach-mark",
-  "version": "4.0.1",
+  "name": "react-native-copilot",
+  "version": "3.3.3",
   "description": "Make an interactive step by step tour guide for you react-native app",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,25 +15,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepktp/react-native-coach-mark.git"
+    "url": "git+https://github.com/mohebifar/react-native-copilot.git"
   },
   "keywords": [
     "react-native",
     "react-native-joyride",
     "react",
-    "coach-mark",
+    "copilot",
     "intro.js",
     "intro"
   ],
   "files": [
     "dist"
   ],
-  "author": "Deepak Yadav <deep@booksmotion.com>",
+  "author": "Mohamad Mohebifar <mohamad@mohebifar.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/deepktp/react-native-coach-mark/issues"
+    "url": "https://github.com/mohebifar/react-native-copilot/issues"
   },
-  "homepage": "https://github.com/deepktp/react-native-coach-mark#readme",
+  "homepage": "https://github.com/mohebifar/react-native-copilot#readme",
   "devDependencies": {
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.4.3",

@@ -1,11 +1,11 @@
 import React, { type FunctionComponent } from "react";
 import { Text, View } from "react-native";
-import { useCopilot } from "../../contexts/CoachMarkProvider";
+import { useCoachMark } from "../../contexts/CoachMarkProvider";
 
 import { styles } from "../style";
 
 export const StepNumber: FunctionComponent<unknown> = () => {
-  const { currentStepNumber } = useCopilot();
+  const { currentStepNumber } = useCoachMark();
 
   return (
     <View style={styles.stepNumber}>
