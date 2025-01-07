@@ -24,9 +24,10 @@ const CopilotHandler = () => {
                 </View>
                 <View style={{ width: 200, height: 60, marginVertical: 50 }}>
                     <CopilotStep
-                        text="This is a hello world example!"
+                        text={<View style={{width: 500, height: 200, backgroundColor: "red"}}></View>}
                         order={2}
                         name="hello2"
+                        verison={2}
                     >
                         <CopilotText>Hello</CopilotText>
                     </CopilotStep>

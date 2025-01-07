@@ -13,7 +13,7 @@ export interface Step {
   visible: boolean;
   wrapperRef: React.RefObject<NativeMethods>;
   measure: () => Promise<LayoutRectangle>;
-  text: string;
+  text: React.ReactElement<any> | string;
 }
 
 export interface CopilotContext {

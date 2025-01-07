@@ -15,6 +15,7 @@ export const useStepsMap = () => {
   const [currentStep, setCurrentStepState] = useState<Step | undefined>(
     undefined
   );
+
   const [steps, dispatch] = useReducer((state: StepsMap, action: Action) => {
     switch (action.type) {
       case "register":

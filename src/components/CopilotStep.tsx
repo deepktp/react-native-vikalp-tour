@@ -6,10 +6,22 @@ import { useCopilot } from "../contexts/CopilotProvider";
 interface Props {
   name: string;
   order: number;
-  text: string;
+  text: React.ReactElement<any> | string;
   children: React.ReactElement<any>;
   active?: boolean;
+  verison?: string | number;
 }
+
+/**
+ * 
+ * @props name: string - Unique id for step
+ * @props order: number - Order of step
+ * @props text: React.ReactElement<any> | string - String or React element to display in tooltip
+ * @props children: React.ReactElement<any> - Child element to wrap with copilot
+ * @props active?: boolean - If step is active
+ * @props verison?: string | number - Change this prop to force update the component
+ * @returns 
+ */
 
 export const CopilotStep = ({
   name,
@@ -17,6 +29,7 @@ export const CopilotStep = ({
   text,
   children,
   active = true,
+  verison = undefined
 }: Props) => {
   const registeredName = useRef<string | null>(null);
   const { registerStep, unregisterStep } = useCopilot();
@@ -64,7 +77,7 @@ export const CopilotStep = ({
       });
       registeredName.current = name;
     }
-  }, [name, order, text, registerStep, unregisterStep, active]);
+  }, [name, order, registerStep, unregisterStep, active, verison]); //listing for text changes and it is and component then it will cause infinite loop
 
   useEffect(() => {
     if (active) {

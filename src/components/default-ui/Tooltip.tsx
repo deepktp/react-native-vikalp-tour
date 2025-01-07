@@ -26,9 +26,11 @@ export const Tooltip = ({ labels }: TooltipProps) => {
   return (
     <View>
       <View style={styles.tooltipContainer}>
-        <Text testID="stepDescription" style={styles.tooltipText}>
-          {currentStep?.text}
-        </Text>
+        { typeof currentStep?.text === "string" ? (
+          <Text style={styles.tooltipText}>{currentStep.text}</Text>
+        ) : (
+          currentStep?.text
+        ) }
       </View>
       <View style={[styles.bottomBar]}>
         {!isLastStep ? (
