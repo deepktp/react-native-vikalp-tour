@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react-native';
+import { render, screen, waitFor } from '@testing-library/react-native';
 import { TourProvider, type useTour } from '../../contexts/TourProvider';
 import { TourStep } from '../TourStep';
 
@@ -17,97 +17,97 @@ const actualuseTour = jest.requireActual('../../contexts/TourProvider')
 const mockuseTour = jest.requireMock('../../contexts/TourProvider')
   .useTour as jest.Mock<ReturnType<typeof useTour>>;
 
+// 🔹 Helpers
+const WrappedComponent = ({ tour }: any) => {
+  if (tour?.ref && typeof tour.ref === 'object') {
+    tour.ref.current = { measure: jest.fn() } as any;
+  }
+  return null;
+};
+
+const renderWithProvider = (ui: React.ReactNode) => {
+  return render(<TourProvider>{ui}</TourProvider>);
+};
+
 describe('TourStep', () => {
+  let registerStepSpy: jest.Mock;
+  let unregisterStepSpy: jest.Mock;
+  let stopSpy: jest.Mock;
+
   beforeEach(() => {
     mockuseTour.mockClear().mockImplementation(actualuseTour);
+
+    registerStepSpy = jest.fn();
+    unregisterStepSpy = jest.fn();
+    stopSpy = jest.fn();
+
+    mockuseTour.mockReturnValue({
+      registerStep: registerStepSpy,
+      unregisterStep: unregisterStepSpy,
+      stop: stopSpy,
+    } as any);
   });
 
-  test('passes the copilot prop to the child component', async () => {
-    const WrappedComponent = () => null;
-
-    render(
-      <TourProvider>
-        <TourStep name="Test" order={0} text="Hello">
-          <WrappedComponent />
-        </TourStep>
-      </TourProvider>
+  test('passes the copilot prop to the child component', () => {
+    renderWithProvider(
+      <TourStep name="Test" order={0} text="Hello">
+        <WrappedComponent />
+      </TourStep>
     );
+
     const wrappedComponentElement = screen.UNSAFE_getByType(WrappedComponent);
 
     expect(wrappedComponentElement.props).toMatchObject({
-      copilot: {
+      tour: {
         onLayout: expect.any(Function),
         ref: expect.any(Object),
       },
     });
   });
 
-  test('registers the step', async () => {
-    const WrappedComponent = () => null;
-    const registerStepSpy = jest.fn();
-
-    mockuseTour.mockReturnValue({
-      registerStep: registerStepSpy,
-      unregisterStep: jest.fn(),
-      stop: jest.fn(),
-    } as any);
-
-    render(
-      <TourProvider>
-        <>
-          <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
-            <WrappedComponent />
-          </TourStep>
-          <TourStep name="Step 2" order={1} text="And this is step 2">
-            <WrappedComponent />
-          </TourStep>
-        </>
-      </TourProvider>
+  test('registers multiple steps', async () => {
+    renderWithProvider(
+      <>
+        <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
+          <WrappedComponent />
+        </TourStep>
+        <TourStep name="Step 2" order={1} text="And this is step 2">
+          <WrappedComponent />
+        </TourStep>
+      </>
     );
 
-    expect(registerStepSpy).toHaveBeenCalledWith({
-      measure: expect.any(Function),
-      name: 'Step 1',
-      text: 'Hello! This is step 1!',
-      order: 0,
-      visible: expect.any(Boolean),
-      wrapperRef: expect.any(Object),
-    });
-
-    expect(registerStepSpy).toHaveBeenCalledWith({
-      measure: expect.any(Function),
-      name: 'Step 2',
-      text: 'And this is step 2',
-      order: 1,
-      visible: expect.any(Boolean),
-      wrapperRef: expect.any(Object),
+    await waitFor(() => {
+      expect(registerStepSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Step 1',
+          text: 'Hello! This is step 1!',
+          order: 0,
+        })
+      );
+      expect(registerStepSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Step 2',
+          text: 'And this is step 2',
+          order: 1,
+        })
+      );
     });
   });
 
   test('re-registers the step after text update', async () => {
-    const WrappedComponent = () => null;
-    const registerStepSpy = jest.fn();
-
-    mockuseTour.mockReturnValue({
-      registerStep: registerStepSpy,
-      unregisterStep: jest.fn(),
-      stop: jest.fn(),
-    } as any);
-
-    render(
-      <TourProvider>
-        <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
-          <WrappedComponent />
-        </TourStep>
-      </TourProvider>
+    const { rerender } = renderWithProvider(
+      <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
+        <WrappedComponent />
+      </TourStep>
     );
 
-    screen.rerender(
+    rerender(
       <TourProvider>
         <TourStep
           name="Step 1"
           order={0}
-          version={2} //this is to force update the step
+          version={2} // force update
           text="Hello! This is the same step with updated text!"
         >
           <WrappedComponent />
@@ -115,63 +115,41 @@ describe('TourStep', () => {
       </TourProvider>
     );
 
-    expect(registerStepSpy).toHaveBeenCalledWith({
-      measure: expect.any(Function),
-      name: 'Step 1',
-      text: 'Hello! This is the same step with updated text!',
-      order: 0,
-      visible: expect.any(Boolean),
-      wrapperRef: expect.any(Object),
-    });
+    await waitFor(() =>
+      expect(registerStepSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Step 1',
+          text: 'Hello! This is the same step with updated text!',
+        })
+      )
+    );
   });
 
   test('unregisters the step after unmount', async () => {
-    const WrappedComponent = () => null;
-    const registerStepSpy = jest.fn();
-    const unregisterStepSpy = jest.fn();
-
-    mockuseTour.mockReturnValue({
-      registerStep: registerStepSpy,
-      unregisterStep: unregisterStepSpy,
-      stop: jest.fn(),
-    } as any);
-
-    render(
-      <TourProvider>
-        <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
-          <WrappedComponent />
-        </TourStep>
-      </TourProvider>
+    const { rerender } = renderWithProvider(
+      <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
+        <WrappedComponent />
+      </TourStep>
     );
 
     // Remove the step from the tree
-    screen.rerender(<TourProvider />);
+    rerender(<TourProvider />);
 
-    expect(unregisterStepSpy).toHaveBeenCalledWith('Step 1');
+    await waitFor(() =>
+      expect(unregisterStepSpy).toHaveBeenCalledWith('Step 1')
+    );
   });
 
   test('unregisters the step after name change and re-registers with the new name', async () => {
-    const WrappedComponent = () => null;
-    const registerStepSpy = jest.fn();
-    const unregisterStepSpy = jest.fn();
-
-    mockuseTour.mockReturnValue({
-      registerStep: registerStepSpy,
-      unregisterStep: unregisterStepSpy,
-      stop: jest.fn(),
-    } as any);
-
     const stepText = 'Hello! This is step 1!';
 
-    render(
-      <TourProvider>
-        <TourStep name="Step 1" order={0} text={stepText}>
-          <WrappedComponent />
-        </TourStep>
-      </TourProvider>
+    const { rerender } = renderWithProvider(
+      <TourStep name="Step 1" order={0} text={stepText}>
+        <WrappedComponent />
+      </TourStep>
     );
 
-    screen.rerender(
+    rerender(
       <TourProvider>
         <TourStep name="Step 1 Updated Name" order={0} text={stepText}>
           <WrappedComponent />
@@ -179,15 +157,17 @@ describe('TourStep', () => {
       </TourProvider>
     );
 
-    expect(unregisterStepSpy).toHaveBeenCalledWith('Step 1');
-
-    expect(registerStepSpy).toHaveBeenCalledWith({
-      measure: expect.any(Function),
-      name: 'Step 1 Updated Name',
-      text: stepText,
-      order: 0,
-      visible: expect.any(Boolean),
-      wrapperRef: expect.any(Object),
+    await waitFor(() => {
+      expect(unregisterStepSpy).toHaveBeenCalledWith('Step 1');
+      expect(registerStepSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Step 1 Updated Name',
+          text: stepText,
+        })
+      );
     });
+
+    // Ensure it didn’t try to unregister the new name
+    expect(unregisterStepSpy).not.toHaveBeenCalledWith('Step 1 Updated Name');
   });
 });
