@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { type NativeMethods } from 'react-native';
 
-import { useTour } from '../contexts/TourProvider';
+import { useTour } from '../hooks/useTour';
 
 interface Props {
   name: string;
@@ -43,7 +43,7 @@ export const TourStep = ({
       width: number;
       height: number;
     }>((resolve) => {
-      const measure = () => {
+      const doMeasure = () => {
         // Wait until the wrapper element appears
         if (wrapperRef.current != null && 'measure' in wrapperRef.current) {
           wrapperRef.current.measure((_ox, _oy, width, height, x, y) => {
@@ -55,11 +55,11 @@ export const TourStep = ({
             });
           });
         } else {
-          requestAnimationFrame(measure);
+          requestAnimationFrame(doMeasure);
         }
       };
 
-      measure();
+      doMeasure();
     });
   };
 

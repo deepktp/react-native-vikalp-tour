@@ -2,18 +2,17 @@ import mitt, { type Emitter } from 'mitt';
 import {
   createContext,
   useCallback,
-  useContext,
   useMemo,
   useRef,
   useState,
   type PropsWithChildren,
 } from 'react';
 import { findNodeHandle, type ScrollView } from 'react-native';
-import { TourModal, type TourModalHandle } from '../components/TourModal';
+import { TourModal } from '../components/TourModal';
 import { OFFSET_WIDTH } from '../components/style';
 import { useStateWithAwait } from '../hooks/useStateWithAwait';
 import { useStepsMap } from '../hooks/useStepsMap';
-import { type TourOptions, type Step } from '../types';
+import { type TourOptions, type Step, type TourModalHandle } from '../types';
 
 type Events = {
   start: undefined;
@@ -41,6 +40,8 @@ interface TourContextType {
   totalStepsNumber: number;
 }
 
+export type { TourContextType };
+
 /*
 This is the maximum wait time for the steps to be registered before starting the tutorial
 At 60fps means 2 seconds
@@ -48,6 +49,8 @@ At 60fps means 2 seconds
 const MAX_START_TRIES = 120;
 
 const TourContext = createContext<TourContextType | undefined>(undefined);
+
+export { TourContext };
 
 export const TourProvider = ({
   verticalOffset = 0,
@@ -116,7 +119,7 @@ export const TourProvider = ({
       setTimeout(
         () => {
           if (move && step) {
-            void moveModalToStep(step);
+            moveModalToStep(step).catch(() => {});
           }
         },
         scrollView != null ? 100 : 0
@@ -131,22 +134,22 @@ export const TourProvider = ({
         setScrollView(suppliedScrollView);
       }
 
-      const currentStep = fromStep ? steps[fromStep] : getFirstStep();
+      const stepToStart = fromStep ? steps[fromStep] : getFirstStep();
 
       if (startTries.current > MAX_START_TRIES) {
         startTries.current = 0;
         return;
       }
 
-      if (currentStep == null) {
+      if (stepToStart == null) {
         startTries.current += 1;
         requestAnimationFrame(() => {
-          void start(fromStep);
+          start(fromStep).catch(() => {});
         });
       } else {
         tourEvents.emit('start');
-        await setCurrentStep(currentStep);
-        await moveModalToStep(currentStep);
+        await setCurrentStep(stepToStart);
+        await moveModalToStep(stepToStart);
         await setVisibility(true);
         startTries.current = 0;
       }
@@ -225,13 +228,4 @@ export const TourProvider = ({
       </>
     </TourContext.Provider>
   );
-};
-
-export const useTour = () => {
-  const value = useContext(TourContext);
-  if (value == null) {
-    throw new Error('You must wrap your app inside TourProvider');
-  }
-
-  return value;
 };

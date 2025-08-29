@@ -45,6 +45,16 @@ export type Labels = Partial<
 
 export interface TooltipProps {
   labels: Labels;
+  goToNext?: () => Promise<void>;
+  goToPrev?: () => Promise<void>;
+  stop?: () => Promise<void>;
+  currentStep?: Step;
+  isFirstStep?: boolean;
+  isLastStep?: boolean;
+}
+
+export interface StepNumberProps {
+  currentStepNumber?: number;
 }
 
 export interface MaskProps {
@@ -62,6 +72,10 @@ export interface MaskProps {
   };
   onClick?: () => any;
   currentStep: Step;
+}
+
+export interface TourModalHandle {
+  animateMove: (obj: LayoutRectangle) => Promise<void>;
 }
 
 export interface TourOptions {

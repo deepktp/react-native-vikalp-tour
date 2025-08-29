@@ -1,20 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react-native';
-import { TourProvider, type useTour } from '../../contexts/TourProvider';
+import { TourProvider } from '../../contexts/TourProvider';
+import { useTour } from '../../hooks/useTour';
 import { TourStep } from '../TourStep';
 
-jest.mock('../../contexts/TourProvider', () => ({
-  ...jest.requireActual('../../contexts/TourProvider'),
-  useTour: jest
-    .fn()
-    .mockImplementation(
-      () => jest.requireActual('../../contexts/TourProvider').useTour
-    ),
+jest.mock('../../hooks/useTour', () => ({
+  useTour: jest.fn(),
 }));
 
-const actualuseTour = jest.requireActual('../../contexts/TourProvider')
-  .useTour as typeof useTour;
-
-const mockuseTour = jest.requireMock('../../contexts/TourProvider')
+const mockuseTour = jest.requireMock('../../hooks/useTour')
   .useTour as jest.Mock<ReturnType<typeof useTour>>;
 
 // 🔹 Helpers
@@ -35,7 +28,7 @@ describe('TourStep', () => {
   let stopSpy: jest.Mock;
 
   beforeEach(() => {
-    mockuseTour.mockClear().mockImplementation(actualuseTour);
+    mockuseTour.mockClear();
 
     registerStepSpy = jest.fn();
     unregisterStepSpy = jest.fn();

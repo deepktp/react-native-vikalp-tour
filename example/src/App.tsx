@@ -51,9 +51,17 @@ function App() {
       <View style={styles.middleView}>
         <TourStep
           active={secondStepActive}
-          text="Here goes your profile picture!"
+          text={
+            <View style={{ backgroundColor: 'red' }}>
+              <Text>
+                Here goes your profile picture and you can pass a component
+                also.
+              </Text>
+            </View>
+          }
           order={2}
           name="secondText"
+          version={5}
         >
           <WalkthroughableImage
             source={{

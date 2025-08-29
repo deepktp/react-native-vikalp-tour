@@ -5,21 +5,25 @@ import { Button } from './Button';
 import { styles } from '../style';
 
 import type { TooltipProps } from '../../types';
-import { useTour } from '../../contexts/TourProvider';
 
-export const Tooltip = ({ labels }: TooltipProps) => {
-  const { goToNext, goToPrev, stop, currentStep, isFirstStep, isLastStep } =
-    useTour();
-
+export const Tooltip = ({
+  labels,
+  goToNext,
+  goToPrev,
+  stop,
+  currentStep,
+  isFirstStep,
+  isLastStep,
+}: TooltipProps) => {
   const handleStop = () => {
-    void stop();
+    stop!();
   };
   const handleNext = () => {
-    void goToNext();
+    goToNext!();
   };
 
   const handlePrev = () => {
-    void goToPrev();
+    goToPrev!();
   };
 
   return (

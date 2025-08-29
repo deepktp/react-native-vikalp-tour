@@ -18,7 +18,7 @@ import {
   type LayoutRectangle,
   type ViewStyle,
 } from 'react-native';
-import { useTour } from '../contexts/TourProvider';
+import { useTour } from '../hooks/useTour';
 import type { TourOptions } from '../types';
 import { StepNumber } from './default-ui/StepNumber';
 import { Tooltip } from './default-ui/Tooltip';
@@ -72,7 +72,16 @@ export const TourModal = forwardRef<TourModalHandle, Props>(function TourModal(
   },
   ref
 ) {
-  const { stop, currentStep, visible } = useTour();
+  const {
+    stop,
+    currentStep,
+    visible,
+    goToNext,
+    goToPrev,
+    isFirstStep,
+    isLastStep,
+    currentStepNumber,
+  } = useTour();
   const [tooltipStyles, setTooltipStyles] = useState({});
   const [arrowStyles, setArrowStyles] = useState({});
   const [animatedValues] = useState({
@@ -245,7 +254,7 @@ export const TourModal = forwardRef<TourModalHandle, Props>(function TourModal(
 
         setContainerVisible(true);
         requestAnimationFrame(() => {
-          void frame();
+          frame();
         });
       });
     },
@@ -260,7 +269,7 @@ export const TourModal = forwardRef<TourModalHandle, Props>(function TourModal(
 
   const handleStop = () => {
     reset();
-    void stop();
+    stop();
   };
 
   const handleMaskClick = () => {
@@ -343,7 +352,7 @@ export const TourModal = forwardRef<TourModalHandle, Props>(function TourModal(
             },
           ]}
         >
-          <StepNumberComponent />
+          <StepNumberComponent currentStepNumber={currentStepNumber} />
         </Animated.View>
         {!!arrowSize && (
           <Animated.View key="arrow" style={[styles.arrow, arrowStyles]} />
@@ -352,7 +361,15 @@ export const TourModal = forwardRef<TourModalHandle, Props>(function TourModal(
           key="tooltip"
           style={[styles.tooltip, tooltipStyles, tooltipStyle]}
         >
-          <TooltipComponent labels={labels} />
+          <TooltipComponent
+            labels={labels}
+            goToNext={goToNext}
+            goToPrev={goToPrev}
+            stop={stop}
+            currentStep={currentStep}
+            isFirstStep={isFirstStep}
+            isLastStep={isLastStep}
+          />
         </Animated.View>
       </>
     );

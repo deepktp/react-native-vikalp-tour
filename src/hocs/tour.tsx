@@ -1,11 +1,12 @@
 import { type FunctionComponent, type ComponentType } from 'react';
-import { TourProvider, useTour } from '../contexts/TourProvider';
+import { TourProvider } from '../contexts/TourProvider';
+import { useTour } from '../hooks/useTour';
 import { type TourOptions } from '../types';
 
 const ComponentWithTourContext = (WrappedComponent: ComponentType) => {
   const Component: FunctionComponent<any> = (props) => {
-    const Tour = useTour();
-    return <WrappedComponent {...props} {...Tour} />;
+    const tour = useTour();
+    return <WrappedComponent {...props} {...tour} />;
   };
 
   Component.displayName = `TourInjector(${
