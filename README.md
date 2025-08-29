@@ -73,9 +73,7 @@ function App() {
 }
 ```
 
-## 📚 API Reference
-
-## Installation
+## 📦 Installation
 
 **NOTE**: This library provides a modern hooks-based API for creating interactive tours in React Native applications.
 
@@ -84,6 +82,91 @@ import { TourProvider, TourStep, walkthroughable, useTour } from '@rn-vui/tour';
 ```
 
 **Optional**: If you want to have the smooth SVG animation, you should install and link [`react-native-svg`](https://github.com/software-mansion/react-native-svg).
+
+## 🏁 Basic Usage
+
+### Setting up the Tour Provider
+
+Wrap your app or the component tree where you want to use tours with `TourProvider`:
+
+```jsx
+import { TourProvider } from '@rn-vui/tour';
+
+export default function App() {
+  return (
+    <TourProvider>
+      <YourAppContent />
+    </TourProvider>
+  );
+}
+```
+
+### Making Components Walkthroughable
+
+Before you can highlight components, you need to make them "walkthroughable" using the `walkthroughable` HOC:
+
+```jsx
+import { walkthroughable } from '@rn-vui/tour';
+
+const WalkthroughableText = walkthroughable(Text);
+const WalkthroughableImage = walkthroughable(Image);
+const WalkthroughableView = walkthroughable(View);
+```
+
+### Creating Tour Steps
+
+Use `TourStep` to define each step in your tour:
+
+```jsx
+import { TourStep, useTour } from '@rn-vui/tour';
+
+function HomeScreen() {
+  const { start } = useTour();
+
+  return (
+    <View>
+      <TourStep
+        text="This is the welcome message!"
+        order={1}
+        name="welcome"
+      >
+        <WalkthroughableText style={styles.welcome}>
+          Welcome to My App!
+        </WalkthroughableText>
+      </TourStep>
+
+      <TourStep
+        text="Click here to start your journey"
+        order={2}
+        name="startButton"
+      >
+        <WalkthroughableTouchableOpacity onPress={() => start()}>
+          <Text>Get Started</Text>
+        </WalkthroughableTouchableOpacity>
+      </TourStep>
+    </View>
+  );
+}
+```
+
+### Starting the Tour
+
+Use the `start` function from `useTour` hook to begin the tour:
+
+```jsx
+function App() {
+  const { start } = useTour();
+
+  return (
+    <View>
+      <Button
+        title="Start Tutorial"
+        onPress={() => start()}
+      />
+    </View>
+  );
+}
+```
 
 ## 📚 API Reference
 
@@ -204,354 +287,145 @@ type Labels = Partial<{
 </TourProvider>
 ```
 
-## Usage
+## 🎨 Advanced Features
 
-Wrap the portion of your app that you want to use the tour with inside `<TourProvider>`:
+### Overlays and Animation
 
-```jsx
-import { TourProvider, TourStep, walkthroughable, useTour } from '@rn-vui/tour';
+The overlay in react-native-vikalp-tour draws a dark transparent overlay around the screen. Choose between two overlay options:
 
-const AppWithTour = () => {
-  return (
-    <TourProvider>
-      <HomeScreen />
-    </TourProvider>
-  );
-};
-```
+**SVG Overlay** (Recommended):
+- Smooth animations
+- Requires `react-native-svg`
+- Better performance on most devices
 
-Before defining walkthrough steps for your react elements, you must make them `walkthroughable`. The easiest way to do that for built-in react native components, is using the `walkthroughable` HOC. Then you must wrap the element with `TourStep`.
+**View Overlay**:
+- Simple rectangles
+- No additional dependencies
+- Better for low-end Android devices
 
 ```jsx
-import { TourProvider, TourStep, walkthroughable, useTour } from '@rn-vui/tour';
+// SVG overlay (default if react-native-svg is installed)
+<TourProvider overlay="svg">
+  <App />
+</TourProvider>
 
-const WalkthroughableText = walkthroughable(Text);
-
-const HomeScreen = () => {
-  return (
-    <View>
-      <TourStep text="This is a hello world example!" order={1} name="hello">
-        <WalkthroughableText>Hello world!</WalkthroughableText>
-      </TourStep>
-    </View>
-  );
-};
-```
-
-Every `TourStep` must have these props:
-
-1. **name**: A unique name for the walkthrough step.
-2. **order**: A positive number indicating the order of the step in the entire walkthrough.
-3. **text**: The text shown as the description for the step.
-
-Additionally, a step may set the **active** prop, a boolean that controls whether the step is used or skipped.
-
-In order to start the tutorial, you can call the `start` function from the `useTour` hook:
-
-```jsx
-const HomeScreen = () => {
-  const { start } = useTour();
-
-  return (
-    <View>
-      <Button title="Start tutorial" onPress={() => start()} />
-    </View>
-  );
-};
-```
-
-If you are looking for a working example, please check out [this link](https://github.com/deepktp/react-native-vikalp-tour/tree/master/example).
-
-### Overlays and animation
-
-The overlay in react-native-vikalp-tour is the component that draws the dark transparent over the screen. React-native-vikalp-tour comes with two overlay options: `view` and `svg`.
-
-The `view` overlay uses 4 rectangles drawn around the target element using the `<View />` component. We don't recommend using animation with this overlay since it's sluggish on some devices specially on Android.
-
-The `svg` overlay uses an SVG path component for drawing the overlay. It offers a nice and smooth animation but it depends on `react-native-svg`. If you are using expo, you can install it using:
-
-```
-expo install react-native-svg
-```
-
-Or if you are using react-native-cli:
-
-```
-yarn add react-native-svg
-
-# or with npm
-
-npm install --save react-native-svg
-
-cd ios && pod install
-```
-
-You can specify the overlay by passing the `overlay` prop to the `<TourProvider />` component:
-
-```jsx
-<TourProvider overlay="svg" {/* or "view" */}>
+// View overlay
+<TourProvider overlay="view">
   <App />
 </TourProvider>
 ```
 
-By default, if overlay is not explicitly specified, the `svg` overlay will be used if `react-native-svg` is installed, otherwise the `view` overlay will be used.
+### Custom Tooltip Styling
 
-### Custom tooltip and step number UI components
-
-You can customize the tooltip and the step number components by passing a component to the `TourProvider` component. If you are looking for an example tooltip component, take a look at [the default ui implementations](https://github.com/deepktp/react-native-vikalp-tour/blob/master/src/components/default-ui).
+Customize the appearance of your tooltips:
 
 ```jsx
-const TooltipComponent = () => {
-  const {
-    isFirstStep,
-    isLastStep,
-    goToNext,
-    goToNth,
-    goToPrev,
-    stop,
-    currentStep,
-  } = useTour();
-
-  return (
-    // ...
-  )
-};
-
-
-<TourProvider tooltipComponent={TooltipComponent} stepNumberComponent={StepComponent}>
-  <App />
-</TourProvider>
-```
-
-### Navigating through the tour
-
-The above code snippet shows the functions passed to the tooltip. These are your primary navigation functions. Some notes on navigation:
-
-- `goToNext` and `goToPrev` will move the mask from the current wrapped component immediately to the next.
-
-- You can use `stop` in conjunction with `goToNth` to effectively "pause" a tour, allowing for user input, animations or any other interaction that shouldn't have the mask applied. Once you want to pick the tour back up, call `goToNth` on the next tour step.
-
-Note that `goToNth` is 1-indexed, which is in line with what your step orders should look like.
-
-### Custom tooltip styling
-
-You can customize tooltip's wrapper style:
-
-```jsx
-const style = {
+const customTooltipStyle = {
   backgroundColor: '#9FA8DA',
   borderRadius: 10,
-  paddingTop: 5,
+  padding: 10,
 };
 
-<TourProvider tooltipStyle={style}>
-  <App />
-</TourProvider>;
-```
-
-#### Manage tooltip width
-
-By default, the tooltip width is calculated dynamically. You can make it fixed-size by overriding both `width` and `maxWidth`, check the example bellow:
-
-```jsx
-const MARGIN = 8;
-const WIDTH = Dimensions.get("window").width - 2 * MARGIN;
-
-<TourProvider tooltipStyle={{ width: WIDTH, maxWidth: WIDTH, left: MARGIN }}>
-  <App />
-</TourProvider>;
-```
-
-### Custom tooltip arrow color
-
-You can customize the tooltip's arrow color:
-
-```jsx
-<TourProvider arrowColor="#9FA8DA">
+<TourProvider tooltipStyle={customTooltipStyle}>
   <App />
 </TourProvider>
 ```
 
-### Custom overlay color
+### Custom Components
 
-You can customize the mask color - default is `rgba(0, 0, 0, 0.4)`, by passing a color string to the `TourProvider` component.
-
-```jsx
-<TourProvider backdropColor="rgba(50, 50, 100, 0.9)">
-  <App />
-</TourProvider>
-```
-
-### Custom svg mask Path
-
-You can customize the mask svg path by passing a function to the `TourProvider` component.
-
-```ts
-function SvgMaskPathFn(args: {
-  size: Animated.ValueXY;
-  position: Animated.ValueXY;
-  canvasSize: {
-    x: number;
-    y: number;
-  };
-  step: Step;
-}): string;
-```
-
-Example with circle:
+Create your own tooltip and step number components:
 
 ```jsx
-const circleSvgPath = ({ position, canvasSize }) =>
-  `M0,0H${canvasSize.x}V${canvasSize.y}H0V0ZM${position.x._value},${position.y._value}Za50 50 0 1 0 100 0 50 50 0 1 0-100 0`;
-
-<TourProvider svgMaskPath={circleSvgPath}>
-  <App />
-</TourProvider>;
-```
-
-Example with different overlay for specific step:
-
-Give name prop for the step
-
-```jsx
-<TourStep text="This is a hello world example!" order={1} name="hello">
-  <WalkthroughableText>Hello world!</WalkthroughableText>
-</TourStep>
-```
-
-Now you can return different svg path depending on step name
-
-```jsx
-const customSvgPath = (args) => {
-  if (args.step?.name === 'hello') {
-    return `M0,0H${canvasSize.x}V${canvasSize.y}H0V0ZM${position.x._value},${position.y._value}Za50 50 0 1 0 100 0 50 50 0 1 0-100 0`;
-  } else {
-    return `M0,0H${canvasSize.x}V${canvasSize.y}H0V0ZM${position.x._value},${
-      position.y._value
-    }H${position.x._value + size.x._value}V${
-      position.y._value + size.y._value
-    }H${position.x._value}V${position.y._value}Z`;
-  }
-};
-
-<TourProvider svgMaskPath={customSvgPath}>
-  <App />
-</TourProvider>;
-```
-
-### Custom components as steps
-
-The components wrapped inside `TourStep`, will receive a `tour` prop with a mutable `ref` and `onLayout` which the outermost rendered element of the component or the element that you want the tooltip be shown around, must extend.
-
-```jsx
-import { TourStep } from '@rn-vui/tour';
-
-const CustomComponent = ({ tour }) => (
-  <View {...tour}>
-    <Text>Hello world!</Text>
+const CustomTooltip = ({ isFirstStep, isLastStep, goToNext, goToPrev, stop, currentStep }) => (
+  <View style={styles.tooltip}>
+    <Text>{currentStep?.text}</Text>
+    <View style={styles.buttons}>
+      {!isFirstStep && <Button title="Previous" onPress={goToPrev} />}
+      {!isLastStep && <Button title="Next" onPress={goToNext} />}
+      <Button title="Skip" onPress={stop} />
+    </View>
   </View>
 );
 
-const HomeScreen = () => {
-  return (
-    <View>
-      <TourStep text="This is a hello world example!" order={1} name="hello">
-        <CustomComponent />
-      </TourStep>
-    </View>
-  );
-};
+<TourProvider tooltipComponent={CustomTooltip}>
+  <App />
+</TourProvider>
 ```
 
-### Custom labels (for i18n)
+### Event Handling
 
-You can localize labels:
+Listen to tour events for analytics or custom behavior:
 
 ```jsx
-<TourProvider
-  labels={{
-    previous: "Vorheriger",
-    next: "Nächster",
-    skip: "Überspringen",
-    finish: "Beenden"
-  }}
->
+import { useTour } from '@rn-vui/tour';
+import { useEffect } from 'react';
+
+function App() {
+  const { tourEvents } = useTour();
+
+  useEffect(() => {
+    const handleStart = () => console.log('Tour started');
+    const handleStop = () => console.log('Tour completed');
+    const handleStepChange = (step) => console.log('Step changed:', step?.name);
+
+    tourEvents.on('start', handleStart);
+    tourEvents.on('stop', handleStop);
+    tourEvents.on('stepChange', handleStepChange);
+
+    return () => {
+      tourEvents.off('start', handleStart);
+      tourEvents.off('stop', handleStop);
+      tourEvents.off('stepChange', handleStepChange);
+    };
+  }, [tourEvents]);
+
+  return <YourApp />;
+}
 ```
 
-### Adjust vertical position
+### ScrollView Support
 
-In order to adjust vertical position pass `verticalOffset` to the `TourProvider` component.
-
-```jsx
-<TourProvider verticalOffset={36}>
-```
-
-### Triggering the tutorial
-
-Use `const {start} = useTour()` to trigger the tutorial. You can either invoke it with a touch event or in `useEffect` to start after the component mounts. Note that the component and all its descendants must be mounted before starting the tutorial since the `TourStep`s need to be registered first.
-
-### Usage inside a ScrollView
-
-Pass the ScrollView reference as the second argument to the `start()` function.
-eg `start(undefined, scrollViewRef)`
+For tours within ScrollViews, pass the ScrollView reference:
 
 ```jsx
 import { ScrollView } from 'react-native';
 
-class HomeScreen {
-  componentDidMount() {
-    // Starting the tutorial and passing the scrollview reference.
-    this.props.start(false, this.scrollView);
-  }
-
-  componentWillUnmount() {
-    // Don't forget to disable event handlers to prevent errors
-    this.props.tourEvents.off('stop');
-  }
-
-  render() {
-    <ScrollView ref={(ref) => (this.scrollView = ref)}>// ...</ScrollView>;
-  }
-}
-```
-
-### Listening to the events
-
-`useTour` provides a `tourEvents` function prop to allow you to track the progress of the tutorial. It utilizes [mitt](https://github.com/developit/mitt) under the hood.
-
-List of available events is:
-
-- `start` — Tour tutorial has started.
-- `stop` — Tour tutorial has ended or skipped.
-- `stepChange` — Next step is triggered. Passes `Step` instance as event handler argument.
-
-**Example:**
-
-```jsx
-import { useTour } from "@rn-vui/tour";
-
-const HomeScreen = () => {
-  const { tourEvents } = useTour();
-
-  useEffect(() => {
-    const listener = () => {
-      // Tour tutorial finished!
-    };
-
-    tourEvents.on("stop", listener);
-
-    return () => {
-      tourEvents.off("stop", listener)
-    };
-  }, []);
+function ScrollableScreen() {
+  const { start } = useTour();
+  const scrollViewRef = useRef(null);
 
   return (
-    // ...
+    <ScrollView ref={scrollViewRef}>
+      <TourStep text="This step is in a ScrollView" order={1} name="scrollStep">
+        <WalkthroughableText>Scrollable Content</WalkthroughableText>
+      </TourStep>
+      <Button
+        title="Start Tour"
+        onPress={() => start(undefined, scrollViewRef.current)}
+      />
+    </ScrollView>
   );
 }
 ```
 
-## Contributing
+### Internationalization (i18n)
+
+Customize button labels for different languages:
+
+```jsx
+<TourProvider
+  labels={{
+    previous: "Anterior",
+    next: "Siguiente",
+    skip: "Omitir",
+    finish: "Finalizar"
+  }}
+>
+  <App />
+</TourProvider>
+```
+
+## 🤝 Contributing
 
 Issues and Pull Requests are always welcome.
 
