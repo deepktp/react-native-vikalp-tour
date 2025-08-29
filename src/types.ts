@@ -17,7 +17,7 @@ export interface Step {
   text: React.ReactElement<any> | string;
 }
 
-export interface CoachMarkContext {
+export interface TourContext {
   registerStep: (step: Step) => void;
   unregisterStep: (name: string) => void;
   getCurrentStep: () => Step | undefined;
@@ -64,7 +64,7 @@ export interface MaskProps {
   currentStep: Step;
 }
 
-export interface CoachMarkOptions {
+export interface TourOptions {
   easing?: ((value: number) => number) | undefined;
   overlay?: 'svg' | 'view';
   animationDuration?: number;

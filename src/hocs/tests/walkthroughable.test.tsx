@@ -18,12 +18,12 @@ const walkthroughableComponents = [
 
 const nativeComponents = [View, Text, ScrollView, TextInput];
 
-it('spreads the copilot prop object on the wrapped component', () => {
+it('spreads the tour prop object on the wrapped component', () => {
   const { getByTestId } = render(
     // @ts-ignore - allow passing test-only props
     <WalkthroughableView
       testID="wrapped"
-      copilot={{ keyForNum: 1, keyForStr: 'hello' }}
+      tour={{ keyForNum: 1, keyForStr: 'hello' }}
     />
   );
 
@@ -33,12 +33,12 @@ it('spreads the copilot prop object on the wrapped component', () => {
   expect(wrapped.props.keyForStr).toBe('hello');
 });
 
-it('spreads the copilot prop object on the wrapped component along with other flat props', () => {
+it('spreads the tour prop object on the wrapped component along with other flat props', () => {
   const { getByTestId } = render(
     // @ts-ignore - allow passing test-only props
     <WalkthroughableView
       testID="wrapped"
-      copilot={{ keyForNum: 1, keyForStr: 'hello' }}
+      tour={{ keyForNum: 1, keyForStr: 'hello' }}
       otherProp="the other prop"
     />
   );
@@ -50,12 +50,12 @@ it('spreads the copilot prop object on the wrapped component along with other fl
   expect(wrapped.props.otherProp).toBe('the other prop');
 });
 
-it('spreads the copilot prop object on the wrapped component not overriding the root props', () => {
+it('spreads the tour prop object on the wrapped component not overriding the root props', () => {
   const { getByTestId } = render(
     // @ts-ignore - allow passing test-only props
     <WalkthroughableView
       testID="wrapped"
-      copilot={{ keyForNum: 1, keyForStr: 'hello' }}
+      tour={{ keyForNum: 1, keyForStr: 'hello' }}
       keyForNum={2}
     />
   );
@@ -75,7 +75,7 @@ it('works with all types of react native built-in components', () => {
       // @ts-ignore - allow passing test-only props
       React.createElement(WalkthroughableComponent, {
         testID: `wrapped-${key}`,
-        copilot: { keyForNum: 1, keyForStr: 'hello' },
+        tour: { keyForNum: 1, keyForStr: 'hello' },
       })
     );
 

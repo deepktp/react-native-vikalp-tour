@@ -5,11 +5,11 @@ import { Button } from './Button';
 import { styles } from '../style';
 
 import type { TooltipProps } from '../../types';
-import { useCoachMark } from '../../contexts/CoachMarkProvider';
+import { useTour } from '../../contexts/TourProvider';
 
 export const Tooltip = ({ labels }: TooltipProps) => {
   const { goToNext, goToPrev, stop, currentStep, isFirstStep, isLastStep } =
-    useCoachMark();
+    useTour();
 
   const handleStop = () => {
     void stop();

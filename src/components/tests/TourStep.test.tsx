@@ -1,40 +1,36 @@
 import { render, screen } from '@testing-library/react-native';
-import {
-  CoachMarkProvider,
-  type useCoachMark,
-} from '../../contexts/CoachMarkProvider';
-import { CoachMarkStep } from '../CoachMarkStep';
+import { TourProvider, type useTour } from '../../contexts/TourProvider';
+import { TourStep } from '../TourStep';
 
-jest.mock('../../contexts/CoachMarkProvider', () => ({
-  ...jest.requireActual('../../contexts/CoachMarkProvider'),
-  useCoachMark: jest
+jest.mock('../../contexts/TourProvider', () => ({
+  ...jest.requireActual('../../contexts/TourProvider'),
+  useTour: jest
     .fn()
     .mockImplementation(
-      () => jest.requireActual('../../contexts/CoachMarkProvider').useCoachMark
+      () => jest.requireActual('../../contexts/TourProvider').useTour
     ),
 }));
 
-const actualuseCoachMark = jest.requireActual(
-  '../../contexts/CoachMarkProvider'
-).useCoachMark as typeof useCoachMark;
+const actualuseTour = jest.requireActual('../../contexts/TourProvider')
+  .useTour as typeof useTour;
 
-const mockuseCoachMark = jest.requireMock('../../contexts/CoachMarkProvider')
-  .useCoachMark as jest.Mock<ReturnType<typeof useCoachMark>>;
+const mockuseTour = jest.requireMock('../../contexts/TourProvider')
+  .useTour as jest.Mock<ReturnType<typeof useTour>>;
 
-describe('CoachMarkStep', () => {
+describe('TourStep', () => {
   beforeEach(() => {
-    mockuseCoachMark.mockClear().mockImplementation(actualuseCoachMark);
+    mockuseTour.mockClear().mockImplementation(actualuseTour);
   });
 
   test('passes the copilot prop to the child component', async () => {
     const WrappedComponent = () => null;
 
     render(
-      <CoachMarkProvider>
-        <CoachMarkStep name="Test" order={0} text="Hello">
+      <TourProvider>
+        <TourStep name="Test" order={0} text="Hello">
           <WrappedComponent />
-        </CoachMarkStep>
-      </CoachMarkProvider>
+        </TourStep>
+      </TourProvider>
     );
     const wrappedComponentElement = screen.UNSAFE_getByType(WrappedComponent);
 
@@ -50,23 +46,23 @@ describe('CoachMarkStep', () => {
     const WrappedComponent = () => null;
     const registerStepSpy = jest.fn();
 
-    mockuseCoachMark.mockReturnValue({
+    mockuseTour.mockReturnValue({
       registerStep: registerStepSpy,
       unregisterStep: jest.fn(),
       stop: jest.fn(),
     } as any);
 
     render(
-      <CoachMarkProvider>
+      <TourProvider>
         <>
-          <CoachMarkStep name="Step 1" order={0} text="Hello! This is step 1!">
+          <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
             <WrappedComponent />
-          </CoachMarkStep>
-          <CoachMarkStep name="Step 2" order={1} text="And this is step 2">
+          </TourStep>
+          <TourStep name="Step 2" order={1} text="And this is step 2">
             <WrappedComponent />
-          </CoachMarkStep>
+          </TourStep>
         </>
-      </CoachMarkProvider>
+      </TourProvider>
     );
 
     expect(registerStepSpy).toHaveBeenCalledWith({
@@ -92,31 +88,31 @@ describe('CoachMarkStep', () => {
     const WrappedComponent = () => null;
     const registerStepSpy = jest.fn();
 
-    mockuseCoachMark.mockReturnValue({
+    mockuseTour.mockReturnValue({
       registerStep: registerStepSpy,
       unregisterStep: jest.fn(),
       stop: jest.fn(),
     } as any);
 
     render(
-      <CoachMarkProvider>
-        <CoachMarkStep name="Step 1" order={0} text="Hello! This is step 1!">
+      <TourProvider>
+        <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
           <WrappedComponent />
-        </CoachMarkStep>
-      </CoachMarkProvider>
+        </TourStep>
+      </TourProvider>
     );
 
     screen.rerender(
-      <CoachMarkProvider>
-        <CoachMarkStep
+      <TourProvider>
+        <TourStep
           name="Step 1"
           order={0}
           version={2} //this is to force update the step
           text="Hello! This is the same step with updated text!"
         >
           <WrappedComponent />
-        </CoachMarkStep>
-      </CoachMarkProvider>
+        </TourStep>
+      </TourProvider>
     );
 
     expect(registerStepSpy).toHaveBeenCalledWith({
@@ -134,22 +130,22 @@ describe('CoachMarkStep', () => {
     const registerStepSpy = jest.fn();
     const unregisterStepSpy = jest.fn();
 
-    mockuseCoachMark.mockReturnValue({
+    mockuseTour.mockReturnValue({
       registerStep: registerStepSpy,
       unregisterStep: unregisterStepSpy,
       stop: jest.fn(),
     } as any);
 
     render(
-      <CoachMarkProvider>
-        <CoachMarkStep name="Step 1" order={0} text="Hello! This is step 1!">
+      <TourProvider>
+        <TourStep name="Step 1" order={0} text="Hello! This is step 1!">
           <WrappedComponent />
-        </CoachMarkStep>
-      </CoachMarkProvider>
+        </TourStep>
+      </TourProvider>
     );
 
     // Remove the step from the tree
-    screen.rerender(<CoachMarkProvider />);
+    screen.rerender(<TourProvider />);
 
     expect(unregisterStepSpy).toHaveBeenCalledWith('Step 1');
   });
@@ -159,7 +155,7 @@ describe('CoachMarkStep', () => {
     const registerStepSpy = jest.fn();
     const unregisterStepSpy = jest.fn();
 
-    mockuseCoachMark.mockReturnValue({
+    mockuseTour.mockReturnValue({
       registerStep: registerStepSpy,
       unregisterStep: unregisterStepSpy,
       stop: jest.fn(),
@@ -168,19 +164,19 @@ describe('CoachMarkStep', () => {
     const stepText = 'Hello! This is step 1!';
 
     render(
-      <CoachMarkProvider>
-        <CoachMarkStep name="Step 1" order={0} text={stepText}>
+      <TourProvider>
+        <TourStep name="Step 1" order={0} text={stepText}>
           <WrappedComponent />
-        </CoachMarkStep>
-      </CoachMarkProvider>
+        </TourStep>
+      </TourProvider>
     );
 
     screen.rerender(
-      <CoachMarkProvider>
-        <CoachMarkStep name="Step 1 Updated Name" order={0} text={stepText}>
+      <TourProvider>
+        <TourStep name="Step 1 Updated Name" order={0} text={stepText}>
           <WrappedComponent />
-        </CoachMarkStep>
-      </CoachMarkProvider>
+        </TourStep>
+      </TourProvider>
     );
 
     expect(unregisterStepSpy).toHaveBeenCalledWith('Step 1');

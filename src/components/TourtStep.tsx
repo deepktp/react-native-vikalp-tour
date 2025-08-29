@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { type NativeMethods } from 'react-native';
 
-import { useCoachMark } from '../contexts/CoachMarkProvider';
+import { useTour } from '../contexts/TourProvider';
 
 interface Props {
   name: string;
@@ -17,13 +17,13 @@ interface Props {
  * @props name: string - Unique id for step
  * @props order: number - Order of step
  * @props text: React.ReactElement<any> | string - String or React element to display in tooltip
- * @props children: React.ReactElement<any> - Child element to wrap with copilot
+ * @props children: React.ReactElement<any> - Child element to wrap with Tour
  * @props active?: boolean - If step is active
- * @props verison?: string | number - Change this prop to force update the component
+ * @props version?: string | number - Change this prop to force update the component
  * @returns
  */
 
-export const CoachMarkStep = ({
+export const TourStep = ({
   name,
   order,
   text,
@@ -32,7 +32,7 @@ export const CoachMarkStep = ({
   version = undefined,
 }: Props) => {
   const registeredName = useRef<string | null>(null);
-  const { registerStep, unregisterStep } = useCoachMark();
+  const { registerStep, unregisterStep } = useTour();
   // ref starts as null until attached to a native element
   const wrapperRef = React.useRef<NativeMethods | null>(null);
 
@@ -68,33 +68,27 @@ export const CoachMarkStep = ({
       if (registeredName.current && registeredName.current !== name) {
         unregisterStep(registeredName.current);
       }
-      if (wrapperRef.current) {
-        registerStep({
-          name,
-          text,
-          order,
-          measure,
-          wrapperRef,
-          visible: true,
-        });
-        registeredName.current = name;
-      }
+      registerStep({
+        name,
+        text,
+        order,
+        measure,
+        wrapperRef,
+        visible: true,
+      });
+      registeredName.current = name;
     }
   }, [name, order, registerStep, unregisterStep, active, version]); //listing for text changes and it is and component then it will cause infinite loop
 
   useEffect(() => {
-    if (active) {
-      return () => {
-        if (registeredName.current) {
-          unregisterStep(registeredName.current);
-        }
-      };
-    }
-
-    return () => {};
+    return () => {
+      if (active && registeredName.current) {
+        unregisterStep(registeredName.current);
+      }
+    };
   }, [name, unregisterStep, active]);
 
-  const copilotProps = useMemo(
+  const tourProps = useMemo(
     () => ({
       ref: wrapperRef,
       onLayout: () => {}, // Android hack
@@ -102,5 +96,5 @@ export const CoachMarkStep = ({
     []
   );
 
-  return React.cloneElement(children, { copilot: copilotProps });
+  return React.cloneElement(children, { Tour: tourProps });
 };

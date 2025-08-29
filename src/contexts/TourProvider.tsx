@@ -9,14 +9,11 @@ import {
   type PropsWithChildren,
 } from 'react';
 import { findNodeHandle, type ScrollView } from 'react-native';
-import {
-  CoachMarkModal,
-  type CoachMarkModalHandle,
-} from '../components/CoachMarkModal';
+import { TourModal, type TourModalHandle } from '../components/TourModal';
 import { OFFSET_WIDTH } from '../components/style';
 import { useStateWithAwait } from '../hooks/useStateWithAwait';
 import { useStepsMap } from '../hooks/useStepsMap';
-import { type CoachMarkOptions, type Step } from '../types';
+import { type TourOptions, type Step } from '../types';
 
 type Events = {
   start: undefined;
@@ -24,7 +21,7 @@ type Events = {
   stepChange: Step | undefined;
 };
 
-interface CoachMarkContextType {
+interface TourContextType {
   registerStep: (step: Step) => void;
   unregisterStep: (stepName: string) => void;
   currentStep: Step | undefined;
@@ -37,7 +34,7 @@ interface CoachMarkContextType {
   goToNth: (n: number) => Promise<void>;
   goToPrev: () => Promise<void>;
   visible: boolean;
-  coachMarkEvents: Emitter<Events>;
+  tourEvents: Emitter<Events>;
   isFirstStep: boolean;
   isLastStep: boolean;
   currentStepNumber: number;
@@ -50,18 +47,16 @@ At 60fps means 2 seconds
 */
 const MAX_START_TRIES = 120;
 
-const CoachMarkContext = createContext<CoachMarkContextType | undefined>(
-  undefined
-);
+const TourContext = createContext<TourContextType | undefined>(undefined);
 
-export const CoachMarkProvider = ({
+export const TourProvider = ({
   verticalOffset = 0,
   children,
   ...rest
-}: PropsWithChildren<CoachMarkOptions>) => {
+}: PropsWithChildren<TourOptions>) => {
   const startTries = useRef(0);
-  const coachMarkEvents = useRef(mitt<Events>()).current;
-  const modal = useRef<CoachMarkModalHandle | null>(null);
+  const tourEvents = useRef(mitt<Events>()).current;
+  const modal = useRef<TourModalHandle | null>(null);
 
   const [visible, setVisibility] = useStateWithAwait(false);
   const [scrollView, setScrollView] = useState<ScrollView | null>(null);
@@ -103,7 +98,7 @@ export const CoachMarkProvider = ({
   const setCurrentStep = useCallback(
     async (step?: Step, move: boolean = true) => {
       setCurrentStepState(step);
-      coachMarkEvents.emit('stepChange', step);
+      tourEvents.emit('stepChange', step);
 
       if (scrollView != null) {
         const nodeHandle = findNodeHandle(scrollView);
@@ -127,7 +122,7 @@ export const CoachMarkProvider = ({
         scrollView != null ? 100 : 0
       );
     },
-    [coachMarkEvents, moveModalToStep, scrollView, setCurrentStepState]
+    [tourEvents, moveModalToStep, scrollView, setCurrentStepState]
   );
 
   const start = useCallback(
@@ -149,7 +144,7 @@ export const CoachMarkProvider = ({
           void start(fromStep);
         });
       } else {
-        coachMarkEvents.emit('start');
+        tourEvents.emit('start');
         await setCurrentStep(currentStep);
         await moveModalToStep(currentStep);
         await setVisibility(true);
@@ -157,7 +152,7 @@ export const CoachMarkProvider = ({
       }
     },
     [
-      coachMarkEvents,
+      tourEvents,
       getFirstStep,
       moveModalToStep,
       scrollView,
@@ -169,8 +164,8 @@ export const CoachMarkProvider = ({
 
   const stop = useCallback(async () => {
     await setVisibility(false);
-    coachMarkEvents.emit('stop');
-  }, [coachMarkEvents, setVisibility]);
+    tourEvents.emit('stop');
+  }, [tourEvents, setVisibility]);
 
   const next = useCallback(async () => {
     await setCurrentStep(getNextStep());
@@ -195,7 +190,7 @@ export const CoachMarkProvider = ({
       start,
       stop,
       visible,
-      coachMarkEvents,
+      tourEvents,
       goToNext: next,
       goToNth: nth,
       goToPrev: prev,
@@ -211,7 +206,7 @@ export const CoachMarkProvider = ({
       start,
       stop,
       visible,
-      coachMarkEvents,
+      tourEvents,
       next,
       nth,
       prev,
@@ -223,19 +218,19 @@ export const CoachMarkProvider = ({
   );
 
   return (
-    <CoachMarkContext.Provider value={value}>
+    <TourContext.Provider value={value}>
       <>
-        <CoachMarkModal ref={modal} {...rest} />
+        <TourModal ref={modal} {...rest} />
         {children}
       </>
-    </CoachMarkContext.Provider>
+    </TourContext.Provider>
   );
 };
 
-export const useCoachMark = () => {
-  const value = useContext(CoachMarkContext);
+export const useTour = () => {
+  const value = useContext(TourContext);
   if (value == null) {
-    throw new Error('You must wrap your app inside CoachMarkProvider');
+    throw new Error('You must wrap your app inside TourProvider');
   }
 
   return value;

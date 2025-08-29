@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { type NativeMethods } from 'react-native';
 
-import { useCoachMark } from '../contexts/CoachMarkProvider';
+import { useTour } from '../contexts/TourProvider';
 
 interface Props {
   name: string;
@@ -9,7 +9,7 @@ interface Props {
   text: React.ReactElement<any> | string;
   children: React.ReactElement<any>;
   active?: boolean;
-  verison?: string | number;
+  version?: string | number;
 }
 
 /**
@@ -17,22 +17,22 @@ interface Props {
  * @props name: string - Unique id for step
  * @props order: number - Order of step
  * @props text: React.ReactElement<any> | string - String or React element to display in tooltip
- * @props children: React.ReactElement<any> - Child element to wrap with coachMark
+ * @props children: React.ReactElement<any> - Child element to wrap with tour
  * @props active?: boolean - If step is active
- * @props verison?: string | number - Change this prop to force update the component
+ * @props version?: string | number - Change this prop to force update the component
  * @returns
  */
 
-export const CoachMarkStep = ({
+export const TourStep = ({
   name,
   order,
   text,
   children,
   active = true,
-  verison = undefined,
+  version = undefined,
 }: Props) => {
   const registeredName = useRef<string | null>(null);
-  const { registerStep, unregisterStep } = useCoachMark();
+  const { registerStep, unregisterStep } = useTour();
   // ref starts as null until attached to a native element
   const wrapperRef = React.useRef<NativeMethods | null>(null);
 
@@ -68,27 +68,33 @@ export const CoachMarkStep = ({
       if (registeredName.current && registeredName.current !== name) {
         unregisterStep(registeredName.current);
       }
-      registerStep({
-        name,
-        text,
-        order,
-        measure,
-        wrapperRef,
-        visible: true,
-      });
-      registeredName.current = name;
+      if (wrapperRef.current) {
+        registerStep({
+          name,
+          text,
+          order,
+          measure,
+          wrapperRef,
+          visible: true,
+        });
+        registeredName.current = name;
+      }
     }
-  }, [name, order, registerStep, unregisterStep, active, verison]); //listing for text changes and it is and component then it will cause infinite loop
+  }, [name, order, registerStep, unregisterStep, active, version]); //listing for text changes and it is and component then it will cause infinite loop
 
   useEffect(() => {
-    return () => {
-      if (active && registeredName.current) {
-        unregisterStep(registeredName.current);
-      }
-    };
+    if (active) {
+      return () => {
+        if (registeredName.current) {
+          unregisterStep(registeredName.current);
+        }
+      };
+    }
+
+    return () => {};
   }, [name, unregisterStep, active]);
 
-  const coachMarkProps = useMemo(
+  const tourProps = useMemo(
     () => ({
       ref: wrapperRef,
       onLayout: () => {}, // Android hack
@@ -96,5 +102,5 @@ export const CoachMarkStep = ({
     []
   );
 
-  return React.cloneElement(children, { coachMark: coachMarkProps });
+  return React.cloneElement(children, { tour: tourProps });
 };
