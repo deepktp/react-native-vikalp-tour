@@ -1,41 +1,40 @@
-import "@testing-library/jest-native/extend-expect";
-import { render, screen } from "@testing-library/react-native";
-import React from "react";
+import { render, screen } from '@testing-library/react-native';
 import {
-  CopilotProvider,
-  type useCopilot,
-} from "../../contexts/CoachMarkProvider";
-import { CopilotStep } from "../CoachMarkStep";
+  CoachMarkProvider,
+  type useCoachMark,
+} from '../../contexts/CoachMarkProvider';
+import { CoachMarkStep } from '../CoachMarkStep';
 
-jest.mock("../../contexts/CopilotProvider", () => ({
-  ...jest.requireActual("../../contexts/CopilotProvider"),
-  useCopilot: jest
+jest.mock('../../contexts/CoachMarkProvider', () => ({
+  ...jest.requireActual('../../contexts/CoachMarkProvider'),
+  useCoachMark: jest
     .fn()
     .mockImplementation(
-      () => jest.requireActual("../../contexts/CopilotProvider").useCopilot
+      () => jest.requireActual('../../contexts/CoachMarkProvider').useCoachMark
     ),
 }));
 
-const actualUseCopilot = jest.requireActual("../../contexts/CopilotProvider")
-  .useCopilot as typeof useCopilot;
+const actualuseCoachMark = jest.requireActual(
+  '../../contexts/CoachMarkProvider'
+).useCoachMark as typeof useCoachMark;
 
-const mockUseCopilot = jest.requireMock("../../contexts/CopilotProvider")
-  .useCopilot as jest.Mock<ReturnType<typeof useCopilot>>;
+const mockuseCoachMark = jest.requireMock('../../contexts/CoachMarkProvider')
+  .useCoachMark as jest.Mock<ReturnType<typeof useCoachMark>>;
 
-describe("CopilotStep", () => {
+describe('CoachMarkStep', () => {
   beforeEach(() => {
-    mockUseCopilot.mockClear().mockImplementation(actualUseCopilot);
+    mockuseCoachMark.mockClear().mockImplementation(actualuseCoachMark);
   });
 
-  test("passes the copilot prop to the child component", async () => {
+  test('passes the copilot prop to the child component', async () => {
     const WrappedComponent = () => null;
 
     render(
-      <CopilotProvider>
-        <CopilotStep name="Test" order={0} text="Hello">
+      <CoachMarkProvider>
+        <CoachMarkStep name="Test" order={0} text="Hello">
           <WrappedComponent />
-        </CopilotStep>
-      </CopilotProvider>
+        </CoachMarkStep>
+      </CoachMarkProvider>
     );
     const wrappedComponentElement = screen.UNSAFE_getByType(WrappedComponent);
 
@@ -47,33 +46,33 @@ describe("CopilotStep", () => {
     });
   });
 
-  test("registers the step", async () => {
+  test('registers the step', async () => {
     const WrappedComponent = () => null;
     const registerStepSpy = jest.fn();
 
-    mockUseCopilot.mockReturnValue({
+    mockuseCoachMark.mockReturnValue({
       registerStep: registerStepSpy,
       unregisterStep: jest.fn(),
       stop: jest.fn(),
     } as any);
 
     render(
-      <CopilotProvider>
+      <CoachMarkProvider>
         <>
-          <CopilotStep name="Step 1" order={0} text="Hello! This is step 1!">
+          <CoachMarkStep name="Step 1" order={0} text="Hello! This is step 1!">
             <WrappedComponent />
-          </CopilotStep>
-          <CopilotStep name="Step 2" order={1} text="And this is step 2">
+          </CoachMarkStep>
+          <CoachMarkStep name="Step 2" order={1} text="And this is step 2">
             <WrappedComponent />
-          </CopilotStep>
+          </CoachMarkStep>
         </>
-      </CopilotProvider>
+      </CoachMarkProvider>
     );
 
     expect(registerStepSpy).toHaveBeenCalledWith({
       measure: expect.any(Function),
-      name: "Step 1",
-      text: "Hello! This is step 1!",
+      name: 'Step 1',
+      text: 'Hello! This is step 1!',
       order: 0,
       visible: expect.any(Boolean),
       wrapperRef: expect.any(Object),
@@ -81,113 +80,114 @@ describe("CopilotStep", () => {
 
     expect(registerStepSpy).toHaveBeenCalledWith({
       measure: expect.any(Function),
-      name: "Step 2",
-      text: "And this is step 2",
+      name: 'Step 2',
+      text: 'And this is step 2',
       order: 1,
       visible: expect.any(Boolean),
       wrapperRef: expect.any(Object),
     });
   });
 
-  test("re-registers the step after text update", async () => {
+  test('re-registers the step after text update', async () => {
     const WrappedComponent = () => null;
     const registerStepSpy = jest.fn();
 
-    mockUseCopilot.mockReturnValue({
+    mockuseCoachMark.mockReturnValue({
       registerStep: registerStepSpy,
       unregisterStep: jest.fn(),
       stop: jest.fn(),
     } as any);
 
     render(
-      <CopilotProvider>
-        <CopilotStep name="Step 1" order={0} text="Hello! This is step 1!">
+      <CoachMarkProvider>
+        <CoachMarkStep name="Step 1" order={0} text="Hello! This is step 1!">
           <WrappedComponent />
-        </CopilotStep>
-      </CopilotProvider>
+        </CoachMarkStep>
+      </CoachMarkProvider>
     );
 
     screen.rerender(
-      <CopilotProvider>
-        <CopilotStep
+      <CoachMarkProvider>
+        <CoachMarkStep
           name="Step 1"
           order={0}
+          version={2} //this is to force update the step
           text="Hello! This is the same step with updated text!"
         >
           <WrappedComponent />
-        </CopilotStep>
-      </CopilotProvider>
+        </CoachMarkStep>
+      </CoachMarkProvider>
     );
 
     expect(registerStepSpy).toHaveBeenCalledWith({
       measure: expect.any(Function),
-      name: "Step 1",
-      text: "Hello! This is the same step with updated text!",
+      name: 'Step 1',
+      text: 'Hello! This is the same step with updated text!',
       order: 0,
       visible: expect.any(Boolean),
       wrapperRef: expect.any(Object),
     });
   });
 
-  test("unregisters the step after unmount", async () => {
+  test('unregisters the step after unmount', async () => {
     const WrappedComponent = () => null;
     const registerStepSpy = jest.fn();
     const unregisterStepSpy = jest.fn();
 
-    mockUseCopilot.mockReturnValue({
+    mockuseCoachMark.mockReturnValue({
       registerStep: registerStepSpy,
       unregisterStep: unregisterStepSpy,
       stop: jest.fn(),
     } as any);
 
     render(
-      <CopilotProvider>
-        <CopilotStep name="Step 1" order={0} text="Hello! This is step 1!">
+      <CoachMarkProvider>
+        <CoachMarkStep name="Step 1" order={0} text="Hello! This is step 1!">
           <WrappedComponent />
-        </CopilotStep>
-      </CopilotProvider>
+        </CoachMarkStep>
+      </CoachMarkProvider>
     );
 
     // Remove the step from the tree
-    screen.rerender(<CopilotProvider />);
+    screen.rerender(<CoachMarkProvider />);
 
-    expect(unregisterStepSpy).toHaveBeenCalledWith("Step 1");
+    expect(unregisterStepSpy).toHaveBeenCalledWith('Step 1');
   });
 
-  test("unregisters the step after name change and re-registers with the new name", async () => {
+  test('unregisters the step after name change and re-registers with the new name', async () => {
     const WrappedComponent = () => null;
     const registerStepSpy = jest.fn();
     const unregisterStepSpy = jest.fn();
 
-    mockUseCopilot.mockReturnValue({
+    mockuseCoachMark.mockReturnValue({
       registerStep: registerStepSpy,
       unregisterStep: unregisterStepSpy,
       stop: jest.fn(),
     } as any);
 
-    const stepText = "Hello! This is step 1!";
+    const stepText = 'Hello! This is step 1!';
 
     render(
-      <CopilotProvider>
-        <CopilotStep name="Step 1" order={0} text={stepText}>
+      <CoachMarkProvider>
+        <CoachMarkStep name="Step 1" order={0} text={stepText}>
           <WrappedComponent />
-        </CopilotStep>
-      </CopilotProvider>
+        </CoachMarkStep>
+      </CoachMarkProvider>
     );
 
     screen.rerender(
-      <CopilotProvider>
-        <CopilotStep name="Step 1 Updated Name" order={0} text={stepText}>
+      <CoachMarkProvider>
+        <CoachMarkStep name="Step 1 Updated Name" order={0} text={stepText}>
           <WrappedComponent />
-        </CopilotStep>
-      </CopilotProvider>
+        </CoachMarkStep>
+      </CoachMarkProvider>
     );
 
-    expect(unregisterStepSpy).toHaveBeenCalledWith("Step 1");
+    expect(unregisterStepSpy).toHaveBeenCalledWith('Step 1');
 
     expect(registerStepSpy).toHaveBeenCalledWith({
       measure: expect.any(Function),
-      name: "Step 1 Updated Name",
+      name: 'Step 1 Updated Name',
       text: stepText,
       order: 0,
       visible: expect.any(Boolean),

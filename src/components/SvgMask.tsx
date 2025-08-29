@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
   Easing,
   View,
   type LayoutChangeEvent,
-} from "react-native";
-import Svg, { Path } from "react-native-svg";
+} from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
-import type { MaskProps, SvgMaskPathFunction, ValueXY } from "../types";
+import type { MaskProps, SvgMaskPathFunction, ValueXY } from '../types';
 
 const AnimatedSvgPath = Animated.createAnimatedComponent(Path);
-const windowDimensions = Dimensions.get("window");
+const windowDimensions = Dimensions.get('window');
 
 const defaultSvgPath: SvgMaskPathFunction = ({
   size,

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   View,
   Text,
@@ -6,14 +5,14 @@ import {
   type ViewStyle,
   type TextStyle,
   type TextProps,
-} from "react-native";
+} from 'react-native';
 
-import { styles } from "../style";
+import { styles } from '../style';
 
 type Props = {
   wrapperStyle?: StyleProp<ViewStyle>;
   style?: StyleProp<TextStyle>;
-} & Omit<TextProps, "style">;
+} & Omit<TextProps, 'style'>;
 
 export const Button = ({ wrapperStyle, style, ...rest }: Props) => (
   <View style={[styles.button, wrapperStyle]}>

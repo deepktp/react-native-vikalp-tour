@@ -1,11 +1,11 @@
-import React, {
+import {
   forwardRef,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
-} from "react";
+} from 'react';
 import {
   Animated,
   Easing,
@@ -17,18 +17,18 @@ import {
   type LayoutChangeEvent,
   type LayoutRectangle,
   type ViewStyle,
-} from "react-native";
-import { useCoachMark } from "../contexts/CoachMarkProvider";
-import type { CoachMarkOptions } from "../types";
-import { StepNumber } from "./default-ui/StepNumber";
-import { Tooltip } from "./default-ui/Tooltip";
+} from 'react-native';
+import { useCoachMark } from '../contexts/CoachMarkProvider';
+import type { CoachMarkOptions } from '../types';
+import { StepNumber } from './default-ui/StepNumber';
+import { Tooltip } from './default-ui/Tooltip';
 import {
   ARROW_SIZE,
   MARGIN,
   STEP_NUMBER_DIAMETER,
   STEP_NUMBER_RADIUS,
   styles,
-} from "./style";
+} from './style';
 
 type Props = CoachMarkOptions;
 
@@ -53,25 +53,25 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
       tooltipComponent: TooltipComponent = Tooltip,
       tooltipStyle = {},
       stepNumberComponent: StepNumberComponent = StepNumber,
-      overlay = typeof NativeModules.RNSVGSvgViewManager !== "undefined"
-        ? "svg"
-        : "view",
-      animated = typeof NativeModules.RNSVGSvgViewManager !== "undefined",
+      overlay = typeof NativeModules.RNSVGSvgViewManager !== 'undefined'
+        ? 'svg'
+        : 'view',
+      animated = typeof NativeModules.RNSVGSvgViewManager !== 'undefined',
       androidStatusBarVisible = false,
-      backdropColor = "rgba(0, 0, 0, 0.4)",
+      backdropColor = 'rgba(0, 0, 0, 0.4)',
       labels = {
-        finish: "Finish",
-        next: "Next",
-        previous: "Previous",
-        skip: "Skip",
+        finish: 'Finish',
+        next: 'Next',
+        previous: 'Previous',
+        skip: 'Skip',
       },
       svgMaskPath,
       stopOnOutsideClick = false,
-      arrowColor = "#fff",
+      arrowColor = '#fff',
       arrowSize = ARROW_SIZE,
       margin = MARGIN,
     },
-    ref,
+    ref
   ) {
     const { stop, currentStep, visible } = useCoachMark();
     const [tooltipStyles, setTooltipStyles] = useState({});
@@ -82,7 +82,7 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
     });
     const layoutRef = useRef(makeDefaultLayout());
     const [layout, setLayout] = useState<LayoutRectangle | undefined>(
-      undefined,
+      undefined
     );
     const [maskRect, setMaskRect] = useState<LayoutRectangle | undefined>();
 
@@ -124,7 +124,7 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
     const _animateMove = useCallback(
       async (rect: LayoutRectangle) => {
         const newMeasuredLayout = await measure();
-        if (!androidStatusBarVisible && Platform.OS === "android") {
+        if (!androidStatusBarVisible && Platform.OS === 'android') {
           rect.y -= StatusBar.currentHeight ?? 0;
         }
 
@@ -148,35 +148,35 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
         const relativeToRight = Math.abs(center.x - newMeasuredLayout.width);
 
         const verticalPosition =
-          relativeToBottom > relativeToTop ? "bottom" : "top";
+          relativeToBottom > relativeToTop ? 'bottom' : 'top';
         const horizontalPosition =
-          relativeToLeft > relativeToRight ? "left" : "right";
+          relativeToLeft > relativeToRight ? 'left' : 'right';
 
         const tooltip: ViewStyle = {};
         const arrow: ViewStyle = {};
 
-        arrow.position = "absolute";
+        arrow.position = 'absolute';
 
-        if (verticalPosition === "bottom") {
+        if (verticalPosition === 'bottom') {
           tooltip.top = rect.y + rect.height + margin;
           arrow.borderBottomColor = arrowColor;
-          arrow.borderTopColor = "transparent";
-          arrow.borderLeftColor = "transparent";
-          arrow.borderRightColor = "transparent";
+          arrow.borderTopColor = 'transparent';
+          arrow.borderLeftColor = 'transparent';
+          arrow.borderRightColor = 'transparent';
           arrow.top = tooltip.top - arrowSize * 2;
         } else {
           tooltip.bottom = newMeasuredLayout.height - (rect.y - margin);
           arrow.borderTopColor = arrowColor;
-          arrow.borderLeftColor = "transparent";
-          arrow.borderRightColor = "transparent";
-          arrow.borderBottomColor = "transparent";
+          arrow.borderLeftColor = 'transparent';
+          arrow.borderRightColor = 'transparent';
+          arrow.borderBottomColor = 'transparent';
           arrow.bottom = tooltip.bottom - arrowSize * 2;
         }
 
-        if (horizontalPosition === "left") {
+        if (horizontalPosition === 'left') {
           tooltip.right = Math.max(
             newMeasuredLayout.width - (rect.x + rect.width),
-            0,
+            0
           );
           tooltip.right =
             tooltip.right === 0 ? tooltip.right + margin : tooltip.right;
@@ -195,8 +195,8 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
         sanitize(rect);
 
         const animate = [
-          ["top", rect.y],
-          ["stepNumberLeft", stepNumberLeft],
+          ['top', rect.y],
+          ['stepNumberLeft', stepNumberLeft],
         ] as const;
 
         if (isAnimated) {
@@ -208,7 +208,7 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
                 easing,
                 useNativeDriver: false,
               });
-            }),
+            })
           ).start();
         } else {
           animate.forEach(([key, value]) => {
@@ -235,10 +235,10 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
         isAnimated,
         arrowSize,
         margin,
-      ],
+      ]
     );
 
-    const animateMove = useCallback<CoachMarkModalHandle["animateMove"]>(
+    const animateMove = useCallback<CoachMarkModalHandle['animateMove']>(
       async (rect) => {
         await new Promise<void>((resolve) => {
           const frame = async () => {
@@ -252,7 +252,7 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
           });
         });
       },
-      [_animateMove],
+      [_animateMove]
     );
 
     const reset = () => {
@@ -272,15 +272,11 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
       }
     };
 
-    useImperativeHandle(
-      ref,
-      () => {
-        return {
-          animateMove,
-        };
-      },
-      [animateMove],
-    );
+    useImperativeHandle(ref, () => {
+      return {
+        animateMove,
+      };
+    }, [animateMove]);
 
     const modalVisible = containerVisible || visible;
     const contentVisible = layout != null && containerVisible;
@@ -295,7 +291,7 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
         visible
         onRequestClose={noop}
         transparent
-        supportedOrientations={["portrait", "landscape"]}
+        supportedOrientations={['portrait', 'landscape']}
       >
         <View style={styles.container} onLayout={handleLayoutChange}>
           {contentVisible && renderMask()}
@@ -306,11 +302,9 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
 
     function renderMask() {
       const MaskComponent =
-        overlay === "svg"
-          ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-            require("./SvgMask").SvgMask
-          : // eslint-disable-next-line @typescript-eslint/no-var-requires
-            require("./ViewMask").ViewMask;
+        overlay === 'svg'
+          ? require('./SvgMask').SvgMask
+          : require('./ViewMask').ViewMask;
 
       const size = maskRect && {
         x: maskRect.width,
@@ -366,12 +360,12 @@ export const CoachMarkModal = forwardRef<CoachMarkModalHandle, Props>(
         </>
       );
     }
-  },
+  }
 );
 
 const floorify = (obj: Record<string, any>) => {
   Object.keys(obj).forEach((key) => {
-    if (typeof obj[key] === "number") {
+    if (typeof obj[key] === 'number') {
       obj[key] = Math.floor(obj[key]);
     }
   });
@@ -379,8 +373,7 @@ const floorify = (obj: Record<string, any>) => {
 
 const removeNan = (obj: Record<string, any>) => {
   Object.keys(obj).forEach((key) => {
-    if (typeof obj[key] === "number" && isNaN(obj[key])) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    if (typeof obj[key] === 'number' && isNaN(obj[key])) {
       delete obj[key];
     }
   });

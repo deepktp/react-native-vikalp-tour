@@ -1,7 +1,8 @@
-import React from "react";
-import { View, Text, ScrollView, TextInput } from "react-native";
-import renderer from "react-test-renderer";
-import { walkthroughable } from "../walkthroughable";
+// using only @testing-library/react-native
+import React from 'react';
+import { render } from '@testing-library/react-native';
+import { View, Text, ScrollView, TextInput } from 'react-native';
+import { walkthroughable } from '../walkthroughable';
 
 const WalkthroughableView = walkthroughable(View);
 const WalkthroughableText = walkthroughable(Text);
@@ -17,63 +18,70 @@ const walkthroughableComponents = [
 
 const nativeComponents = [View, Text, ScrollView, TextInput];
 
-it("spreads the copilot prop object on the wrapped component", () => {
-  const tree = renderer.create(
-    // @ts-expect-error just for testing
-    <WalkthroughableView copilot={{ keyForNum: 1, keyForStr: "hello" }} />
+it('spreads the copilot prop object on the wrapped component', () => {
+  const { getByTestId } = render(
+    // @ts-ignore - allow passing test-only props
+    <WalkthroughableView
+      testID="wrapped"
+      copilot={{ keyForNum: 1, keyForStr: 'hello' }}
+    />
   );
 
-  const { props } = tree.root.findByType(View as any );
+  const wrapped = getByTestId('wrapped');
 
-  expect(props.keyForNum).toBe(1);
-  expect(props.keyForStr).toBe("hello");
+  expect(wrapped.props.keyForNum).toBe(1);
+  expect(wrapped.props.keyForStr).toBe('hello');
 });
 
-it("spreads the copilot prop object on the wrapped component along with other flat props", () => {
-  const tree = renderer.create(
+it('spreads the copilot prop object on the wrapped component along with other flat props', () => {
+  const { getByTestId } = render(
+    // @ts-ignore - allow passing test-only props
     <WalkthroughableView
-      // @ts-expect-error just for testing
-      copilot={{ keyForNum: 1, keyForStr: "hello" }}
+      testID="wrapped"
+      copilot={{ keyForNum: 1, keyForStr: 'hello' }}
       otherProp="the other prop"
     />
   );
 
-  const { props } = tree.root.findByType(View as any );
+  const wrapped = getByTestId('wrapped');
 
-  expect(props.keyForNum).toBe(1);
-  expect(props.keyForStr).toBe("hello");
-  expect(props.otherProp).toBe("the other prop");
+  expect(wrapped.props.keyForNum).toBe(1);
+  expect(wrapped.props.keyForStr).toBe('hello');
+  expect(wrapped.props.otherProp).toBe('the other prop');
 });
 
-it("spreads the copilot prop object on the wrapped component not overriding the root props", () => {
-  const tree = renderer.create(
+it('spreads the copilot prop object on the wrapped component not overriding the root props', () => {
+  const { getByTestId } = render(
+    // @ts-ignore - allow passing test-only props
     <WalkthroughableView
-      // @ts-expect-error just for testing
-      copilot={{ keyForNum: 1, keyForStr: "hello" }}
+      testID="wrapped"
+      copilot={{ keyForNum: 1, keyForStr: 'hello' }}
       keyForNum={2}
     />
   );
 
-  const { props } = tree.root.findByType(View as any );
+  const wrapped = getByTestId('wrapped');
 
-  expect(props.keyForNum).toBe(2);
-  expect(props.keyForStr).toBe("hello");
+  expect(wrapped.props.keyForNum).toBe(2);
+  expect(wrapped.props.keyForStr).toBe('hello');
 });
 
-it("works with all types of react native built-in components", () => {
-  nativeComponents.forEach((Component, key) => {
-    const WalkthroughableComponent = walkthroughableComponents[key];
+it('works with all types of react native built-in components', () => {
+  nativeComponents.forEach((_, key) => {
+    const WalkthroughableComponent = walkthroughableComponents[key] as any;
 
-    const tree = renderer.create(
-      <WalkthroughableComponent
-        // @ts-expect-error just for testing
-        copilot={{ keyForNum: 1, keyForStr: "hello" }}
-      />
+    // use createElement to avoid JSX typing issues
+    const { getByTestId } = render(
+      // @ts-ignore - allow passing test-only props
+      React.createElement(WalkthroughableComponent, {
+        testID: `wrapped-${key}`,
+        copilot: { keyForNum: 1, keyForStr: 'hello' },
+      })
     );
 
-    const { props } = tree.root.findByType(Component as any );
+    const wrapped = getByTestId(`wrapped-${key}`);
 
-    expect(props.keyForNum).toBe(1);
-    expect(props.keyForStr).toBe("hello");
+    expect(wrapped.props.keyForNum).toBe(1);
+    expect(wrapped.props.keyForStr).toBe('hello');
   });
 });

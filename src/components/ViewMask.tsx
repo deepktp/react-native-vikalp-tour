@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Animated, View } from "react-native";
-import { styles } from "./style";
+import { Animated, View } from 'react-native';
+import { styles } from './style';
 
-import type { MaskProps, ValueXY } from "../types";
+import type { MaskProps, ValueXY } from '../types';
 
 export const ViewMask = (props: MaskProps) => {
   const sizeValue = useRef<Animated.ValueXY>(

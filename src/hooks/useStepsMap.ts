@@ -1,13 +1,13 @@
-import { useCallback, useMemo, useReducer, useState } from "react";
-import { type Step, type StepsMap } from "../types";
+import { useCallback, useMemo, useReducer, useState } from 'react';
+import { type Step, type StepsMap } from '../types';
 
 type Action =
   | {
-      type: "register";
+      type: 'register';
       step: Step;
     }
   | {
-      type: "unregister";
+      type: 'unregister';
       stepName: string;
     };
 
@@ -18,12 +18,13 @@ export const useStepsMap = () => {
 
   const [steps, dispatch] = useReducer((state: StepsMap, action: Action) => {
     switch (action.type) {
-      case "register":
+      case 'register':
         return {
           ...state,
           [action.step.name]: action.step,
         };
-      case "unregister": {
+      case 'unregister': {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [action.stepName]: _, ...rest } = state;
         return rest;
       }
@@ -87,11 +88,11 @@ export const useStepsMap = () => {
   );
 
   const registerStep = useCallback((step: Step) => {
-    dispatch({ type: "register", step });
+    dispatch({ type: 'register', step });
   }, []);
 
   const unregisterStep = useCallback((stepName: string) => {
-    dispatch({ type: "unregister", stepName });
+    dispatch({ type: 'unregister', stepName });
   }, []);
 
   return {

@@ -1,5 +1,5 @@
-import mitt, { type Emitter } from "mitt";
-import React, {
+import mitt, { type Emitter } from 'mitt';
+import {
   createContext,
   useCallback,
   useContext,
@@ -7,18 +7,17 @@ import React, {
   useRef,
   useState,
   type PropsWithChildren,
-} from "react";
-import { findNodeHandle, type ScrollView } from "react-native";
+} from 'react';
+import { findNodeHandle, type ScrollView } from 'react-native';
 import {
   CoachMarkModal,
-  type CoachMarkModalHandle
-} from "../components/CoachMarkModal";
-import { OFFSET_WIDTH } from "../components/style";
-import { useStateWithAwait } from "../hooks/useStateWithAwait";
-import { useStepsMap } from "../hooks/useStepsMap";
-import { type CoachMarkOptions, type Step } from "../types";
+  type CoachMarkModalHandle,
+} from '../components/CoachMarkModal';
+import { OFFSET_WIDTH } from '../components/style';
+import { useStateWithAwait } from '../hooks/useStateWithAwait';
+import { useStepsMap } from '../hooks/useStepsMap';
+import { type CoachMarkOptions, type Step } from '../types';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type Events = {
   start: undefined;
   stop: undefined;
@@ -51,7 +50,9 @@ At 60fps means 2 seconds
 */
 const MAX_START_TRIES = 120;
 
-const CoachMarkContext = createContext<CoachMarkContextType | undefined>(undefined);
+const CoachMarkContext = createContext<CoachMarkContextType | undefined>(
+  undefined
+);
 
 export const CoachMarkProvider = ({
   verticalOffset = 0,
@@ -102,7 +103,7 @@ export const CoachMarkProvider = ({
   const setCurrentStep = useCallback(
     async (step?: Step, move: boolean = true) => {
       setCurrentStepState(step);
-      coachMarkEvents.emit("stepChange", step);
+      coachMarkEvents.emit('stepChange', step);
 
       if (scrollView != null) {
         const nodeHandle = findNodeHandle(scrollView);
@@ -148,7 +149,7 @@ export const CoachMarkProvider = ({
           void start(fromStep);
         });
       } else {
-        coachMarkEvents.emit("start");
+        coachMarkEvents.emit('start');
         await setCurrentStep(currentStep);
         await moveModalToStep(currentStep);
         await setVisibility(true);
@@ -168,7 +169,7 @@ export const CoachMarkProvider = ({
 
   const stop = useCallback(async () => {
     await setVisibility(false);
-    coachMarkEvents.emit("stop");
+    coachMarkEvents.emit('stop');
   }, [coachMarkEvents, setVisibility]);
 
   const next = useCallback(async () => {
@@ -224,10 +225,7 @@ export const CoachMarkProvider = ({
   return (
     <CoachMarkContext.Provider value={value}>
       <>
-        <CoachMarkModal
-          ref={modal}
-          {...rest}
-        />
+        <CoachMarkModal ref={modal} {...rest} />
         {children}
       </>
     </CoachMarkContext.Provider>
@@ -237,7 +235,7 @@ export const CoachMarkProvider = ({
 export const useCoachMark = () => {
   const value = useContext(CoachMarkContext);
   if (value == null) {
-    throw new Error("You must wrap your app inside CoachMarkProvider");
+    throw new Error('You must wrap your app inside CoachMarkProvider');
   }
 
   return value;

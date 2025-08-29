@@ -1,12 +1,11 @@
-import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from 'react-native';
 
-import { Button } from "./Button";
+import { Button } from './Button';
 
-import { styles } from "../style";
+import { styles } from '../style';
 
-import type { TooltipProps } from "../../types";
-import { useCoachMark } from "../../contexts/CoachMarkProvider";
+import type { TooltipProps } from '../../types';
+import { useCoachMark } from '../../contexts/CoachMarkProvider';
 
 export const Tooltip = ({ labels }: TooltipProps) => {
   const { goToNext, goToPrev, stop, currentStep, isFirstStep, isLastStep } =
@@ -26,11 +25,11 @@ export const Tooltip = ({ labels }: TooltipProps) => {
   return (
     <View>
       <View style={styles.tooltipContainer}>
-        { typeof currentStep?.text === "string" ? (
+        {typeof currentStep?.text === 'string' ? (
           <Text style={styles.tooltipText}>{currentStep.text}</Text>
         ) : (
           currentStep?.text
-        ) }
+        )}
       </View>
       <View style={[styles.bottomBar]}>
         {!isLastStep ? (

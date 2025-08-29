@@ -1,6 +1,6 @@
-import React, { type FunctionComponent, type ComponentType } from "react";
-import { CoachMarkProvider, useCoachMark } from "../contexts/CoachMarkProvider"; 
-import { type CoachMarkOptions } from "../types";
+import { type FunctionComponent, type ComponentType } from 'react';
+import { CoachMarkProvider, useCoachMark } from '../contexts/CoachMarkProvider';
+import { type CoachMarkOptions } from '../types';
 
 const ComponentWithCoachMarkContext = (WrappedComponent: ComponentType) => {
   const Component: FunctionComponent<any> = (props) => {
@@ -9,7 +9,7 @@ const ComponentWithCoachMarkContext = (WrappedComponent: ComponentType) => {
   };
 
   Component.displayName = `CoachMarkInjector(${
-    WrappedComponent.displayName ?? WrappedComponent.name ?? "Component"
+    WrappedComponent.displayName ?? WrappedComponent.name ?? 'Component'
   })`;
 
   return Component;
@@ -32,7 +32,7 @@ export function coachMark<P = any>(options: CoachMarkOptions) {
     };
 
     OuterComponent.displayName = `coachMark(${
-      WrappedComponent.displayName ?? WrappedComponent.name ?? "Component"
+      WrappedComponent.displayName ?? WrappedComponent.name ?? 'Component'
     })`;
 
     return OuterComponent;
