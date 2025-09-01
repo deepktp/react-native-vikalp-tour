@@ -22,6 +22,8 @@ import { useTour } from '../hooks/useTour';
 import type { TourOptions } from '../types';
 import { StepNumber } from './default-ui/StepNumber';
 import { Tooltip } from './default-ui/Tooltip';
+import { SvgMask } from './SvgMask';
+import { ViewMask } from './ViewMask';
 import {
   ARROW_SIZE,
   MARGIN,
@@ -307,10 +309,7 @@ export const TourModal = forwardRef<TourModalHandle, Props>(function TourModal(
   );
 
   function renderMask() {
-    const MaskComponent =
-      overlay === 'svg'
-        ? require('./SvgMask').SvgMask
-        : require('./ViewMask').ViewMask;
+    const MaskComponent = overlay === 'svg' ? SvgMask : ViewMask;
 
     const size = maskRect && {
       x: maskRect.width,
@@ -322,15 +321,19 @@ export const TourModal = forwardRef<TourModalHandle, Props>(function TourModal(
     return (
       <MaskComponent
         animated={animated}
+        //@ts-ignore
         layout={layout}
         style={styles.overlayContainer}
+        //@ts-ignore
         size={size}
+        //@ts-ignore
         position={position}
         easing={easing}
         animationDuration={animationDuration}
         backdropColor={backdropColor}
         svgMaskPath={svgMaskPath}
         onClick={handleMaskClick}
+        //@ts-ignore
         currentStep={currentStep}
       />
     );
